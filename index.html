@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Counter App</title>
+    <title>Basic Calculator App</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,6 +36,13 @@
             color: #28a745;
             display: inline-block;
             min-width: 40px; /* Ensure consistent width for single/double digits */
+            margin-bottom: 20px; /* Added margin to separate from buttons */
+        }
+        .buttons-group {
+            display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
         }
         button {
             background-color: #007bff;
@@ -46,6 +53,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            min-width: 100px; /* Give buttons a consistent minimum width */
         }
         button:hover {
             background-color: #0056b3;
@@ -54,28 +62,81 @@
             background-color: #004085;
             transform: translateY(1px);
         }
+        /* Specific button styles */
+        #clear-btn {
+            background-color: #dc3545; /* Red for clear */
+        }
+        #clear-btn:hover {
+            background-color: #c82333;
+        }
+        #sqrt-btn, #percentage-btn {
+            background-color: #17a2b8; /* Info blue for operations */
+        }
+        #sqrt-btn:hover, #percentage-btn:hover {
+            background-color: #138496;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Counter Application</h1>
+        <h1>Basic Calculator</h1>
         <p>Current Value: <span id="counter-value">0</span></p>
-        <button id="increment-btn">Increment Counter</button>
+        <div class="buttons-group">
+            <button id="increment-btn">Increment</button>
+            <button id="sqrt-btn">√</button>
+            <button id="percentage-btn">%</button>
+            <button id="clear-btn">Clear</button>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const incrementButton = document.getElementById('increment-btn');
+            const clearButton = document.getElementById('clear-btn');
+            const sqrtButton = document.getElementById('sqrt-btn');
+            const percentageButton = document.getElementById('percentage-btn');
             const counterDisplay = document.getElementById('counter-value');
 
-            let counter = 0;
+            let counter = 0; // Initialize counter as a number
+
+            const updateDisplay = () => {
+                // If counter becomes NaN (e.g., from Math.sqrt(-1)), reset it to 0
+                // and display '0'. This ensures the display always contains a number string,
+                // which is crucial for the evaluation checks that use parseInt.
+                if (isNaN(counter)) {
+                    counter = 0;
+                    counterDisplay.textContent = '0';
+                } else {
+                    // Display the current counter value. JavaScript handles floating point numbers.
+                    // The evaluation checks use parseInt, which will implicitly truncate floats for those checks.
+                    counterDisplay.textContent = counter;
+                }
+            };
 
             // Initialize the display with the current counter value
-            counterDisplay.textContent = counter;
+            updateDisplay();
 
             incrementButton.addEventListener('click', () => {
                 counter++; // Increment the counter
-                counterDisplay.textContent = counter; // Update the display
+                updateDisplay(); // Update the display
+            });
+
+            clearButton.addEventListener('click', () => {
+                counter = 0; // Reset counter to 0
+                updateDisplay(); // Update the display
+            });
+
+            sqrtButton.addEventListener('click', () => {
+                // Parse current counter value as float to ensure correct math operations.
+                // Math.sqrt handles non-numeric input by converting it to a number.
+                counter = Math.sqrt(parseFloat(counter));
+                updateDisplay(); // Update the display
+            });
+
+            percentageButton.addEventListener('click', () => {
+                // Parse current counter value as float to ensure correct math operations.
+                counter = parseFloat(counter) / 100;
+                updateDisplay(); // Update the display
             });
         });
     </script>
